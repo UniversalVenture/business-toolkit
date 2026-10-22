@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Website Business Toolkit</title>
+<style>
+body{margin:0;background:#111;color:#fff;font-family:Arial,sans-serif}
+header{text-align:center;padding:35px 15px;background:#1d1d1d;border-bottom:2px solid #d4af37}
+h1,h2{color:#d4af37}
+main{max-width:800px;margin:auto;padding:20px}
+section{background:#202020;padding:18px;margin:15px 0;border-radius:10px}
+input,textarea{width:100%;padding:11px;margin:7px 0;background:#111;color:white;border:1px solid #555;border-radius:5px;box-sizing:border-box}
+button{background:#d4af37;color:#111;padding:10px 14px;border:0;border-radius:5px;font-weight:bold;margin:5px 0;cursor:pointer}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#111;padding:10px}
+footer{text-align:center;padding:20px;color:#aaa}
+</style>
+</head>
+<body>
+
+<header>
+<h1>Website Business Toolkit</h1>
+<p>Simple tools to build, optimize and manage your website.</p>
+</header>
+
+<main>
+<section>
+<h2>SEO Title Generator</h2>
+<input id="topic" placeholder="Enter your page topic">
+<button onclick="title()">Generate Title</button>
+<pre id="titleResult"></pre>
+</section>
+
+<section>
+<h2>Meta Description Generator</h2>
+<input id="description" placeholder="Describe your website">
+<button onclick="meta()">Generate Description</button>
+<pre id="metaResult"></pre>
+</section>
+
+<section>
+<h2>robots.txt Generator</h2>
+<input id="url" placeholder="https://example.com">
+<button onclick="robots()">Generate robots.txt</button>
+<pre id="robotsResult"></pre>
+<button onclick="download('robotsResult','robots.txt')">Download File</button>
+</section>
+
+<section>
+<h2>XML Sitemap Generator</h2>
+<textarea id="pages" placeholder="Enter page URLs, one per line"></textarea>
+<button onclick="sitemap()">Generate Sitemap</button>
+<pre id="sitemapResult"></pre>
+<button onclick="download('sitemapResult','sitemap.xml')">Download File</button>
+</section>
+
+<section>
+<h2>Website Launch Checklist</h2>
+<div id="checks">
+<label><input type="checkbox"> Test website on mobile</label><br>
+<label><input type="checkbox"> Check all links</label><br>
+<label><input type="checkbox"> Add page titles</label><br>
+<label><input type="checkbox"> Check website security</label><br>
+<label><input type="checkbox"> Create sitemap</label><br>
+<label><input type="checkbox"> Test contact forms</label>
+</div>
+</section>
+
+<section>
+<h2>Website Speed Test</h2>
+<input id="speed" placeholder="https://example.com">
+<button onclick="testSpeed()">Test Website Speed</button>
+</section>
+</main>
+
+<footer>Website Business Toolkit | Simple tools for website owners</footer>
+
+<script>
+function title(){
+let t=document.getElementById('topic').value.trim();
+document.getElementById('titleResult').textContent=
+t ? t+' | Complete Guide and Tips' : 'Please enter a topic.';
+}
+function meta(){
+let t=document.getElementById('description').value.trim();
+document.getElementById('metaResult').textContent=
+t ? t.slice(0,155) : 'Please enter a description.';
+}
+function robots(){
+let u=document.getElementById('url').value.trim();
+try{
+let x=new URL(u);
+if(!['http:','https:'].includes(x.protocol))throw Error();
+document.getElementById('robotsResult').textContent=
+'User-agent: *\nAllow: /\nSitemap: '+x.origin+'/sitemap.xml';
+}catch(e){alert('Enter a valid website URL.');}
+}
+function sitemap(){
+let urls=document.getElementById('pages').value.trim().split('\n').map(x=>x.trim()).filter(Boolean);
+try{
+urls.forEach(u=>{let x=new URL(u);if(!['http:','https:'].includes(x.protocol))throw Error();});
+let esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+let xml='<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+
+urls.map(u=>'<url><loc>'+esc(u)+'</loc></url>').join('\n')+
+'\n</urlset>';
+document.getElementById('sitemapResult').textContent=xml;
+}catch(e){alert('Enter valid URLs, one per line.');}
+}
+function download(id,name){
+let text=document.getElementById(id).textContent;
+if(!text){alert('Generate the content first.');return;}
+let a=document.createElement('a');
+a.href=URL.createObjectURL(new Blob([text],{type:'text/plain'}));
+a.download=name;a.click();URL.revokeObjectURL(a.href);
+}
+function testSpeed(){
+let u=document.getElementById('speed').value.trim();
+try{
+let x=new URL(u);
+if(!['http:','https:'].includes(x.protocol))throw Error();
+window.open('https://pagespeed.web.dev/analysis?url='+encodeURIComponent(x.href),'_blank');
+}catch(e){alert('Enter a valid website URL.');}
+}
+</script>
+</body>
+</html>
